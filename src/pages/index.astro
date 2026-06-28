@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const lessons = (await getCollection('lessons')).sort((a, b) => a.data.order - b.data.order);
+
+// group by part, preserving first-seen order
+const parts: { name: string; items: typeof lessons }[] = [];
+for (const l of lessons) {
+  let p = parts.find((x) => x.name === l.data.part);
+  if (!p) { p = { name: l.data.part, items: [] }; parts.push(p); }
+  p.items.push(l);
+}
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+<Base>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">from shapes to continuous machines</div>
+      <h1>What is a model,<br />really?</h1>
+      <p class="lede">
+        You said you know shapes, nothing specific. Perfect. We'll build the whole
+        picture from there — neurons, latent space, the inference loop, and the strange
+        question you landed on: can a model ever stop resting and simply <em>run</em>?
+      </p>
+      <a class="cta" href="/lessons/what-is-a-model">Begin the masterclass →</a>
+      <div class="progress" aria-hidden="true">
+        {lessons.map(() => <span class="seg"></span>)}
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" id="curriculum">
+    {parts.map((part) => (
+      <section>
+        <div class="part-head">{part.name}</div>
+        {part.items.map((l) => (
+          <a class="lesson-card" href={`/lessons/${l.slug}`}>
+            <span class="lesson-num">{pad(l.data.order)}</span>
+            <span class="lesson-meta">
+              <h3>{l.data.title}</h3>
+              <p>{l.data.subtitle}</p>
+            </span>
+            <span class="lesson-dur">{l.data.duration}</span>
+          </a>
+        ))}
+      </section>
+    ))}
+    <div style="height:60px"></div>
+  </main>
+</Base>

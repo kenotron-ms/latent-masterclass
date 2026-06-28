@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const lessons = (await getCollection('lessons')).sort((a, b) => a.data.order - b.data.order);
+  return lessons.map((entry, i) => ({
+    params: { slug: entry.slug },
+    props: { entry, prev: lessons[i - 1] ?? null, next: lessons[i + 1] ?? null, total: lessons.length },
+  }));
+}
+
+const { entry, prev, next, total } = Astro.props;
+const { Content } = await entry.render();
+const { title, subtitle, part, order, takeaway } = entry.data;
+const pad = (n) => String(n).padStart(2, '0');
+---
+<Base title={`${pad(order)} · ${title}`} desc={subtitle}>
+  <article class="article">
+    <div class="wrap">
+      <div class="kicker">{part} · lesson {pad(order)} / {pad(total)}</div>
+      <h1>{title}</h1>
+      <p class="subtitle">{subtitle}</p>
+
+      <div class="article-body">
+        <Content />
+      </div>
+
+      <div class="takeaway">
+        <div class="lbl">the one thing to keep</div>
+        <p>{takeaway}</p>
+      </div>
+
+      <nav class="pager">
+        {prev ? (
+          <a href={`/lessons/${prev.slug}`}>
+            <span class="dir">← previous</span>
+            <span class="ttl">{prev.data.title}</span>
+          </a>
+        ) : (
+          <a href="/">
+            <span class="dir">← home</span>
+            <span class="ttl">Curriculum</span>
+          </a>
+        )}
+        {next ? (
+          <a class="next" href={`/lessons/${next.slug}`}>
+            <span class="dir">next →</span>
+            <span class="ttl">{next.data.title}</span>
+          </a>
+        ) : (
+          <a class="next" href="/">
+            <span class="dir">done →</span>
+            <span class="ttl">Back to curriculum</span>
+          </a>
+        )}
+      </nav>
+    </div>
+  </article>
+</Base>
