@@ -14,7 +14,7 @@ const { entry, prev, next, total } = Astro.props;
 const { Content } = await entry.render();
 const { title, subtitle, part, order, takeaway } = entry.data;
 const pad = (n) => String(n).padStart(2, '0');
-const base = import.meta.env.BASE_URL;
+const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // strip trailing slash for safe concatenation
 ---
 <Base title={`${pad(order)} · ${title}`} desc={subtitle}>
   <article class="article">
@@ -34,7 +34,7 @@ const base = import.meta.env.BASE_URL;
 
       <nav class="pager">
         {prev ? (
-          <a href={`${base}lessons/${prev.slug}`}>
+          <a href={`${base}/lessons/${prev.slug}`}>
             <span class="dir">← previous</span>
             <span class="ttl">{prev.data.title}</span>
           </a>
@@ -45,7 +45,7 @@ const base = import.meta.env.BASE_URL;
           </a>
         )}
         {next ? (
-          <a class="next" href={`${base}lessons/${next.slug}`}>
+          <a class="next" href={`${base}/lessons/${next.slug}`}>
             <span class="dir">next →</span>
             <span class="ttl">{next.data.title}</span>
           </a>

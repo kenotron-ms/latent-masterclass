@@ -12,7 +12,7 @@ for (const l of lessons) {
   p.items.push(l);
 }
 const pad = (n: number) => String(n).padStart(2, '0');
-const base = import.meta.env.BASE_URL; // e.g. "/latent-masterclass/"
+const base = import.meta.env.BASE_URL.replace(/\/$/, ''); // strip trailing slash for safe concatenation
 ---
 <Base>
   <header class="hero">
@@ -24,7 +24,7 @@ const base = import.meta.env.BASE_URL; // e.g. "/latent-masterclass/"
         picture from there — neurons, latent space, the inference loop, and the strange
         question you landed on: can a model ever stop resting and simply <em>run</em>?
       </p>
-      <a class="cta" href={`${base}lessons/01-what-is-a-model`}>Begin the masterclass →</a>
+      <a class="cta" href={`${base}/lessons/${lessons[0].slug}`}>Begin the masterclass →</a>
       <div class="progress" aria-hidden="true">
         {lessons.map(() => <span class="seg"></span>)}
       </div>
@@ -36,7 +36,7 @@ const base = import.meta.env.BASE_URL; // e.g. "/latent-masterclass/"
       <section>
         <div class="part-head">{part.name}</div>
         {part.items.map((l) => (
-          <a class="lesson-card" href={`${base}lessons/${l.slug}`}>
+          <a class="lesson-card" href={`${base}/lessons/${l.slug}`}>
             <span class="lesson-num">{pad(l.data.order)}</span>
             <span class="lesson-meta">
               <h3>{l.data.title}</h3>
